@@ -1,6 +1,6 @@
 package com.example.banking.exceptions;
 
-public class CustomerInvalidPropertiesException extends Exception {
+public class AccountInvalidPropertiesException extends Exception {
 
 	/**
 	 * 

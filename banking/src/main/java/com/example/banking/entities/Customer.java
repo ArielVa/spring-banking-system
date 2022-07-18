@@ -11,10 +11,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+
 import com.example.banking.entities.account.Account;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
-@Table(name="custoemrs")
+@Table(name="customers")
+@SQLDelete(sql = "UPDATE customers SET is_deleted = true WHERE id=?")
+@Where(clause = "is_deleted=false")
 public class Customer {
 	
 	@Id
@@ -22,9 +28,11 @@ public class Customer {
 	private String name;
 	private String email;
 	private float age;
+	private boolean isDeleted = false;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name="accountNum")
+	@OneToMany(mappedBy = "customer")
+//	@JoinColumn(name="accountNum")
+	@JsonManagedReference
 	List<Account> accounts;
 
 	public Customer() {
@@ -38,6 +46,7 @@ public class Customer {
 		this.age = age;
 		this.email = email;
 		this.accounts = new ArrayList<Account>();
+		this.isDeleted = false;
 	}
 
 	public Customer(int customderId, String name, String email, float age, List<Account> accounts) {
@@ -47,6 +56,7 @@ public class Customer {
 		this.age = age;
 		this.email = email;
 		this.accounts = accounts;
+		this.isDeleted = false;
 	}
 
 	public int getCustomerId() {
@@ -88,11 +98,18 @@ public class Customer {
 	public void setAccounts(List<Account> accounts) {
 		this.accounts = accounts;
 	}
+	
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
 
 	@Override
 	public String toString() {
-		return "Customer [customerId=" + customerId + ", name=" + name + ", email=" + email + ", age=" + age + "]";
+		return "Customer [customerId=" + customerId + ", name=" + name + ", email=" + email + ", age=" + age
+				+ ", isDeleted=" + isDeleted + "]";
 	}
-	
-	
 }

@@ -1,55 +1,59 @@
 package com.example.banking.entities.account;
-
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.example.banking.entities.Customer;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name="accounts")
 public class Account {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private int accountNum;
 	
 	private float balance;
 	
 	@Enumerated(EnumType.ORDINAL)
-	private AccountLimitType accountLimitType;
+	private AccountRiskLevel accountRiskLevel;
 	
 	private boolean isSuspended;
 	
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	
+	@ManyToOne
 	@JoinColumn(name = "customerId")
+	@JsonBackReference
 	private Customer customer;
 
 	public Account() {
 		super();
 	}
 
-	public Account(int accountNum, float balance, AccountLimitType accountLimitType, boolean isSuspended) {
+	public Account(int accountNum, float balance, AccountRiskLevel accountRiskLevel, boolean isSuspended, Customer customer) {
 		super();
 		this.accountNum = accountNum;
 		this.balance = balance;
-		this.accountLimitType = accountLimitType;
-		this.isSuspended = isSuspended;
-	}
-
-	public Account(int accountNum, float balance, AccountLimitType accountLimitType, boolean isSuspended, Customer customer) {
-		super();
-		this.accountNum = accountNum;
-		this.balance = balance;
-		this.accountLimitType = accountLimitType;
+		this.accountRiskLevel = accountRiskLevel;
 		this.isSuspended = isSuspended;
 		this.customer = customer;
+	}
+	
+	public Account(float balance, AccountRiskLevel accountRiskLevel, Customer customer) {
+		super();
+		this.balance = balance;
+		this.accountRiskLevel = accountRiskLevel;
+		this.customer = customer;
+		this.isSuspended = false;
 	}
 
 	public int getAccountNum() {
@@ -68,12 +72,12 @@ public class Account {
 		this.balance = balance;
 	}
 
-	public AccountLimitType getAccountLimitType() {
-		return accountLimitType;
+	public AccountRiskLevel getAccountRiskLevel() {
+		return accountRiskLevel;
 	}
 
-	public void setAccountLimitType(AccountLimitType accountLimitType) {
-		this.accountLimitType = accountLimitType;
+	public void setAccountRiskLevel(AccountRiskLevel accountRiskLevel) {
+		this.accountRiskLevel = accountRiskLevel;
 	}
 
 	public boolean isSuspended() {
@@ -94,7 +98,7 @@ public class Account {
 
 	@Override
 	public String toString() {
-		return "Account [accountNum=" + accountNum + ", balance=" + balance + ", accountLimitType=" + accountLimitType
+		return "Account [accountNum=" + accountNum + ", balance=" + balance + ", accountRiskLevel=" + accountRiskLevel
 				+ ", isSuspended=" + isSuspended + "]";
 	}
 }
