@@ -8,6 +8,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
 import com.example.banking.entities.account.AccountRiskLevel;
 
 
@@ -15,6 +18,8 @@ import com.example.banking.entities.account.AccountRiskLevel;
 @PropertySource(value = "classpath:properties/accounts.properties")
 @ComponentScan("com.example.banking")
 @EnableAspectJAutoProxy
+@EnableScheduling
+@EnableAsync
 public class ApplicationConfig {
 	
 	@Value("${account.type.limit.high}")

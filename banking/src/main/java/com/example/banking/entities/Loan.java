@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "loans")
-public class Loan {
+public class Loan  {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -141,11 +141,17 @@ public class Loan {
 		this.account = account;
 	}
 
+	public Loan clone() {
+ 
+		return new Loan(loanId, amountGiven, amountRemained, monthlyPayment, wasPayed,
+			interestRate, takenDate, dueDate, account);
+	}
+	
 	@Override
 	public String toString() {
 		return "Loan [loanId=" + loanId + ", amountGiven=" + amountGiven + ", amountRemained=" + amountRemained
 				+ ", monthlyPayment=" + monthlyPayment + ", wasPayed=" + wasPayed + ", interestRate=" + interestRate
-				+ ", takenDate=" + takenDate + ", dueDate=" + dueDate + ", account=" + account + "]";
+				+ ", takenDate=" + takenDate + ", dueDate=" + dueDate + "]";
 	}	
 	
 	

@@ -2,6 +2,7 @@ package com.example.banking.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class ExceptionController {
 
-	
+	@Async
 	@ExceptionHandler(value = CustomerInvalidPropertiesException.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Got bad customer data")
 	public ResponseEntity<String> customerInvalidProperties(Exception e) {
@@ -17,6 +18,7 @@ public class ExceptionController {
 		return ResponseEntity.badRequest().body("[Customer] - Error in performing an action on a customer.");
 	}
 	
+	@Async
 	@ExceptionHandler(value = AccountInvalidPropertiesException.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Got bad account data")
 	public ResponseEntity<String> accountInvalidProperties(Exception e) {
@@ -24,6 +26,7 @@ public class ExceptionController {
 		return ResponseEntity.badRequest().body("[Account] - Error in performing an action on an account.");
 	}
 	
+	@Async
 	@ExceptionHandler(value = LoanInvalidPropertiesException.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Got bad account data")
 	public ResponseEntity<String> loanInvalidProperties(Exception e) {

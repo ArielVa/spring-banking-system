@@ -3,6 +3,7 @@ package com.example.banking.services;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -25,6 +26,14 @@ public class LoansService {
 	@Autowired
 	private AccountsRepository accountsRepository;
 	
+//	@Transactional
+	private Loan updateLoanRemainder(Loan loan, float amount) {
+		float newRemainder = loan.getAmountRemained() - amount;
+		loan.setAmountRemained(newRemainder >= 0f ? newRemainder : 0f);
+		loan.setWasPayed(newRemainder <= 0f);
+		return loan;
+	}
+	
 	@Loggable(className = "LoansService",
 			success = "A loan has been created for an account.",
 			failed = "Couldn't create an loan for the account, please contant the bank for more information.",
@@ -37,6 +46,9 @@ public class LoansService {
 
 		return loansRepository.save(new Loan(amount, amount, monthlyPayment, interestRate, today, dueDate, acc));
 	}
+	
+	
+	
 	
 	@Loggable(className = "LoansService",
 			success = "Loan payment had been submitted.",
@@ -52,16 +64,32 @@ public class LoansService {
 		
 		if(loan.getAccount().isSuspended() || loan.getAccount().getCustomer().isDeleted()) throw new LoanInvalidPropertiesException();
 		
-		float newRemainder = loan.getAmountRemained() - amount;
-		loan.setAmountRemained(newRemainder >= 0f ? newRemainder : 0f);
-		loan.setWasPayed(newRemainder <= 0f);
+		updateLoanRemainder(loan, amount);
 		
 		return loan;
 	}
 	
-	// TODO add method payLoanFromAccount
+
+	public List<Loan> getAllUnpaidLoansOfActiveCustomers(){
+		return loansRepository.getAllUnpaidLoansOfActiveCustomers();
+	}
 	
 	
+	@Loggable(className = "LoansService",
+			success = "Performed payment to all open loans.")
+	@Transactional
+	public List<Loan> payLoansFromAccounts() {
+		return getAllUnpaidLoansOfActiveCustomers()
+		.stream()
+		.map(loan -> {
+			updateLoanRemainder(loan, loan.getMonthlyPayment());
+			loan.getAccount().setBalance(loan.getAccount().getBalance() - loan.getMonthlyPayment());
+			System.out.println(loan);
+			return loan;
+		})
+		.collect(Collectors.toList());
+		
+	}
 }
 
 
