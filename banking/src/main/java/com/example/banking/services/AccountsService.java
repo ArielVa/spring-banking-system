@@ -1,17 +1,21 @@
 package com.example.banking.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import com.example.banking.aop.Loggable;
 import com.example.banking.entities.Customer;
 import com.example.banking.entities.account.Account;
 import com.example.banking.entities.account.AccountRiskLevel;
 import com.example.banking.exceptions.AccountInvalidPropertiesException;
+import com.example.banking.exceptions.CustomerInvalidPropertiesException;
 import com.example.banking.repositories.AccountsRepository;
+import com.example.banking.repositories.CustomersRepository;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
-
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 @Service
@@ -21,12 +25,36 @@ public class AccountsService {
 	private AccountsRepository accountsRepository;
 	
 	@Autowired
-	private CustomersService customersService;
+	private CustomersRepository customersRepository;
+		
+	@Autowired()
+	private ApplicationContext context; 
 	
-	public Account getAccountByNum(Integer accountNum) throws Throwable {
-		Optional<Account> account = accountsRepository.findById(accountNum);
-		if(account.isEmpty()) throw new AccountInvalidPropertiesException();
-		return account.get();
+	private Customer findExistingCustomerById(int customerId) throws CustomerInvalidPropertiesException {
+		Customer customer = customersRepository.findCustomerByCustomerIdAndIsDeletedFalse(customerId);
+		if(customer == null) throw new CustomerInvalidPropertiesException();
+		return customer;
+	}
+	
+	@Loggable(className = "AccountsService",
+			success = "Fetched the account",
+			failed = "Can't find an account with the given number.",
+			throwable = AccountInvalidPropertiesException.class)
+	public Account getAccountByNum(Integer accountNum) throws AccountInvalidPropertiesException { 
+		Account acc = accountsRepository.getAnActiveAccountByNum(accountNum);
+		if(acc == null) throw new AccountInvalidPropertiesException();
+		return acc;
+	}
+	
+	@Loggable(className = "AccountsService",
+			success = "Fetched the accounts of the customer",
+			failed = "Can't find a customer with the given id.",
+			throwable = AccountInvalidPropertiesException.class)
+	public List<Account> getAllAccountsOfCustomer(Integer customerId) throws Throwable {
+		return findExistingCustomerById(customerId).getAccounts()
+				.stream()
+				.filter(acc -> !acc.isSuspended())
+				.collect(Collectors.toList());
 	}
 	
 	@Loggable(className = "AccountsService",
@@ -34,13 +62,13 @@ public class AccountsService {
 			failed = "Failed to create a new account for the customer.",
 			throwable = AccountInvalidPropertiesException.class)
 	@Transactional
-	public Account addNewAccountToCustomer(Integer customerId, Float initialBalance) throws Throwable {
-		Customer customer = customersService.getCustomerById(customerId);
+	public Account addNewAccountToCustomer(Integer customerId, Float initialBalance, AccountRiskLevel riskLevel) throws Throwable {
+		Customer customer = findExistingCustomerById(customerId);
 		List<Account> cAccounts = customer.getAccounts();
 		
 		if(initialBalance < 0f) throw new AccountInvalidPropertiesException();
 		
-		Account acc = new Account(initialBalance, AccountRiskLevel.LOW, customer);
+		Account acc = new Account(initialBalance, riskLevel, customer);
 		accountsRepository.save(acc);
 		
 		cAccounts.add(acc);
@@ -50,16 +78,44 @@ public class AccountsService {
 	}
 	
 	@Loggable(className = "AccountsService",
-			success = "An account has been suspended.",
+			success = "An account status has been changed.",
 			failed = "Failure - could not find matching account number.",
 			throwable = AccountInvalidPropertiesException.class)
 	@Transactional
 	public Account setAccountSuspencionStatus(Integer accountNum, Boolean isSuspended) throws Throwable {
-		
-		// TODO implement deleteById, throw exception if can't find account (?)
-		
-		Account account = getAccountByNum(accountNum);
-		account.setSuspended(isSuspended);
-		return account;
+		Account acc = accountsRepository.getAnActiveAccountByNum(accountNum);
+		acc.setSuspended(isSuspended);
+		return acc;
 	}
+	
+	@Loggable(className = "AccountsService",
+			success = "A deposit into an account has been made.",
+			failed = "Failed to deposit into the account, please check the account and amount data.",
+			throwable = AccountInvalidPropertiesException.class)
+	@Transactional
+	public Account deposit(Integer accountNum, Float amount) throws Throwable {
+		Account acc = accountsRepository.getAnActiveAccountByNum(accountNum);
+		if(amount < 0f) throw new AccountInvalidPropertiesException();
+		acc.setBalance(acc.getBalance() + amount);
+		return acc;
+	}
+	
+	@Loggable(className = "AccountsService",
+			success = "A withdrawal from an account has been made.",
+			failed = "Can't withdraw from the account, please check the account input and make contanct with your bank if the issue persists.",
+			throwable = AccountInvalidPropertiesException.class)
+	@Transactional
+	public Account withdraw(Integer accountNum, Float amount) throws Throwable {
+		Account acc = accountsRepository.getAnActiveAccountByNum(accountNum);
+		if(amount < 0f) throw new AccountInvalidPropertiesException();
+		
+		HashMap<AccountRiskLevel, Float> accountLimitByRisk = context.getBean("accountLimitByType", HashMap.class);
+		float newBalance = acc.getBalance() - amount;
+		if(accountLimitByRisk.get(acc.getAccountRiskLevel()) > newBalance) throw new AccountInvalidPropertiesException();
+
+		acc.setBalance(newBalance);
+		return acc;
+	}
+
+	
 }

@@ -1,22 +1,15 @@
 package com.example.banking.services;
 
-import java.nio.file.spi.FileSystemProvider;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import com.example.banking.aop.Loggable;
-import com.example.banking.configs.AccountConfigs;
 import com.example.banking.entities.Customer;
-import com.example.banking.entities.account.Account;
-import com.example.banking.entities.account.AccountRiskLevel;
-import com.example.banking.exceptions.AccountInvalidPropertiesException;
 import com.example.banking.exceptions.CustomerInvalidPropertiesException;
 import com.example.banking.repositories.AccountsRepository;
 import com.example.banking.repositories.CustomersRepository;
@@ -54,30 +47,47 @@ public class CustomersService {
 		return customersRepository.save(new Customer(customerId, name, email, age));
 	}
 	
+	private Customer findCustomerById(Integer customerId) throws CustomerInvalidPropertiesException {
+		Optional<Customer> oCustomer  = customersRepository.findById(customerId);
+		if(oCustomer.isEmpty()) throw new CustomerInvalidPropertiesException();
+		return oCustomer.get();	
+	}
 	
-	public Customer getCustomerById(Integer customerId) throws CustomerInvalidPropertiesException {
-		Optional<Customer> customer  = customersRepository.findById(customerId);
-		if(customer.isEmpty()) throw new CustomerInvalidPropertiesException();
-		return customer.get();	
+	public Customer findActiveCustomerById(Integer customerId) throws CustomerInvalidPropertiesException {
+		return customersRepository.findCustomerByCustomerIdAndIsDeletedFalse(customerId);
 	}
 	
 	public List<Customer> getAllCustomers() {
 		return customersRepository.findAll();
 	}
-
-
-	public void deleteAllCustomersRecords() {
-		customersRepository.deleteAll();;
+	
+	public List<Customer> getAllCustomersWithActiveAccounts() {	
+		return customersRepository.findAllByIsDeletedFalse()
+				.stream()
+				.map(customer -> {
+					Customer toReturn = customer.clone();
+					toReturn.setAccounts(accountsRepository.findAll()
+							.stream()
+							.filter(acc -> !acc.isSuspended() && toReturn.getCustomerId() == acc.getCustomer().getCustomerId())
+							.collect(Collectors.toList()));
+					return toReturn;
+				})
+				.collect(Collectors.toList());
 	}
+
 
 	@Loggable(className = "CustomersService", 
 			success = "Customer with all of its accounts where removed.",
 			failed = "Couldn't remove a customer, please check the provided details again.",
 			throwable = CustomerInvalidPropertiesException.class)
 	@Transactional
-	public Customer removeCustomer(Integer customerId) throws CustomerInvalidPropertiesException {
-		Customer customer = getCustomerById(customerId);
-		customer.setDeleted(true);
+	public Customer setCustomerActiveStatus(Integer customerId, Boolean status) throws CustomerInvalidPropertiesException {
+		Customer customer = findCustomerById(customerId);
+		customer.setDeleted(status);
 		return customer;
+	}
+	
+	public void deleteAllCustomersRecords() {
+		customersRepository.deleteAll();
 	}
 }

@@ -15,7 +15,7 @@ import com.example.banking.entities.account.AccountRiskLevel;
 @PropertySource(value = "classpath:properties/accounts.properties")
 @ComponentScan("com.example.banking")
 @EnableAspectJAutoProxy
-public class AccountConfigs {
+public class ApplicationConfig {
 	
 	@Value("${account.type.limit.high}")
 	private float highLimit;

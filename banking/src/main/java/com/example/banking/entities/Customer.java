@@ -2,26 +2,16 @@ package com.example.banking.entities;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
-
 import com.example.banking.entities.account.Account;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name="customers")
-@SQLDelete(sql = "UPDATE customers SET is_deleted = true WHERE id=?")
-@Where(clause = "is_deleted=false")
-public class Customer {
+public class Customer implements Cloneable {
 	
 	@Id
 	private int customerId;
@@ -106,7 +96,12 @@ public class Customer {
 	public void setDeleted(boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
-
+	
+	public Customer clone() {
+		Customer clonned = new Customer(customerId, name, email, age, accounts);
+		return clonned;
+	}
+	
 	@Override
 	public String toString() {
 		return "Customer [customerId=" + customerId + ", name=" + name + ", email=" + email + ", age=" + age

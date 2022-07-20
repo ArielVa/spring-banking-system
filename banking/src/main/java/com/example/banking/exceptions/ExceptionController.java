@@ -20,8 +20,15 @@ public class ExceptionController {
 	@ExceptionHandler(value = AccountInvalidPropertiesException.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Got bad account data")
 	public ResponseEntity<String> accountInvalidProperties(Exception e) {
-		System.out.println("[AccountsController] - Error in performing an action on a customer.");
+		System.out.println("[AccountsController] - Error in performing an action on an account.");
 		return ResponseEntity.badRequest().body("[Account] - Error in performing an action on an account.");
+	}
+	
+	@ExceptionHandler(value = LoanInvalidPropertiesException.class)
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Got bad account data")
+	public ResponseEntity<String> loanInvalidProperties(Exception e) {
+		System.out.println("[LoansController] - Error in performing an action on a loan.");
+		return ResponseEntity.badRequest().body("[Loan] - Error in performing an action on a loan.");
 	}
 	
 }
