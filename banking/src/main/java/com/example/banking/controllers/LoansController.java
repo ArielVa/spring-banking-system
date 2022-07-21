@@ -21,9 +21,7 @@ import com.example.banking.services.LoansService;
 @RequestMapping("/loans")
 public class LoansController {
 
-	
-	@Autowired
-	private LoansService loansService;
+	@Autowired private LoansService loansService;
 	
 	@PostMapping("/{accountNum}/{amount}/{monthlyPayment}/{interestRate}/{dueDate}")
 	public ResponseEntity<Loan> takeNewLoanOnAccount(@PathVariable("accountNum") Integer accountNum,

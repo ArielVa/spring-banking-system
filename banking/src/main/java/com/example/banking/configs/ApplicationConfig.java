@@ -8,14 +8,20 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.client.RestTemplate;
 
 import com.example.banking.entities.account.AccountRiskLevel;
 
-
 @Configuration
-@PropertySource(value = "classpath:properties/accounts.properties")
+@PropertySources({
+	@PropertySource("classpath:properties/account.properties"),
+	@PropertySource("classpath:properties/customer.properties"),
+	@PropertySource("classpath:properties/email.properties"),
+	@PropertySource("classpath:properties/currency.properties"),
+})
 @ComponentScan("com.example.banking")
 @EnableAspectJAutoProxy
 @EnableScheduling
@@ -38,4 +44,10 @@ public class ApplicationConfig {
 		}};
 	}
 	
+	@Bean
+	public RestTemplate restTemplateCreator() {
+		return new RestTemplate();
+	}
+	
 }
+

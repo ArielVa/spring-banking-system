@@ -20,13 +20,9 @@ import com.example.banking.repositories.LoansRepository;
 @Service
 public class LoansService {
 	
-	@Autowired
-	private LoansRepository loansRepository;
+	@Autowired private LoansRepository loansRepository;
+	@Autowired private AccountsRepository accountsRepository;
 	
-	@Autowired
-	private AccountsRepository accountsRepository;
-	
-//	@Transactional
 	private Loan updateLoanRemainder(Loan loan, float amount) {
 		float newRemainder = loan.getAmountRemained() - amount;
 		loan.setAmountRemained(newRemainder >= 0f ? newRemainder : 0f);
@@ -34,9 +30,14 @@ public class LoansService {
 		return loan;
 	}
 	
+	public List<Loan> getAllOpenLoans() {
+		return loansRepository.findAllByWasPayedFalse();
+	}
+	
+	
 	@Loggable(className = "LoansService",
 			success = "A loan has been created for an account.",
-			failed = "Couldn't create an loan for the account, please contant the bank for more information.",
+			failed = "Couldn't create an loan for the account, please contact the bank for more information.",
 			throwable = LoanInvalidPropertiesException.class)
 	public Loan takeNewLoanOnAccount(Integer accountNum, Float amount, Float monthlyPayment, Float interestRate, Date dueDate) throws Throwable {
 		Account acc = accountsRepository.getAnActiveAccountByNum(accountNum);
@@ -46,9 +47,6 @@ public class LoansService {
 
 		return loansRepository.save(new Loan(amount, amount, monthlyPayment, interestRate, today, dueDate, acc));
 	}
-	
-	
-	
 	
 	@Loggable(className = "LoansService",
 			success = "Loan payment had been submitted.",

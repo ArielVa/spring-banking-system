@@ -18,4 +18,6 @@ public interface LoansRepository extends JpaRepository<Loan, Integer> {
 			nativeQuery = true)
 	List<Loan> getAllUnpaidLoansOfActiveCustomers();
 	
+	List<Loan> findAllByWasPayedFalse();
+	
 }

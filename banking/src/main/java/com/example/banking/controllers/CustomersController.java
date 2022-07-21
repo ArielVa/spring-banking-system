@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.banking.entities.Customer;
-import com.example.banking.entities.account.AccountRiskLevel;
 import com.example.banking.exceptions.CustomerInvalidPropertiesException;
 import com.example.banking.services.CustomersService;
 
@@ -19,11 +19,11 @@ import com.example.banking.services.CustomersService;
 @RequestMapping("/customers")
 public class CustomersController {
 	
-	@Autowired
-	private CustomersService customersService;
+	@Autowired private CustomersService customersService;
 	
-	@PostMapping("/{customerId}/{name}{email}/{age}")
-	public ResponseEntity<Customer> addNewCustomer(@PathVariable("customerId") Integer customerId, 
+	@PostMapping("/{customerId}/{name}/{email}/{age}")
+	public ResponseEntity<Customer> addNewCustomer(
+			@PathVariable("customerId") Integer customerId, 
 			@PathVariable("name") String name,
 			@PathVariable("email") String email,
 			@PathVariable("age") Float age) throws Throwable {
@@ -40,10 +40,10 @@ public class CustomersController {
 		return ResponseEntity.ok(customersService.getAllCustomersWithActiveAccounts());
 	}
 	
-	@DeleteMapping("/{customerId}/{status}")
+	@PutMapping("/{customerId}/{isDeactivated}")
 	public ResponseEntity<Customer> setCustomerStatus(@PathVariable Integer customerId,
-			@PathVariable("status") Boolean status) throws CustomerInvalidPropertiesException {
-		return ResponseEntity.ok(customersService.setCustomerActiveStatus(customerId, status));
+			@PathVariable("isDeactivated") Boolean isDeactivated) throws CustomerInvalidPropertiesException {
+		return ResponseEntity.ok(customersService.setCustomerActiveStatus(customerId, isDeactivated));
 	}
 	
 	@DeleteMapping("")

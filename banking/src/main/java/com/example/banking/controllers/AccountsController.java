@@ -19,8 +19,7 @@ import com.example.banking.services.AccountsService;
 @RequestMapping("/accounts")
 public class AccountsController {
 	
-	@Autowired
-	private AccountsService accountsService;
+	@Autowired private AccountsService accountsService;
 	
 	@GetMapping("/{customerId}")
 	public ResponseEntity<List<Account>> getAccounts(@PathVariable ("customerId") Integer customerId) throws Throwable {
@@ -51,6 +50,20 @@ public class AccountsController {
 		return ResponseEntity.ok(accountsService.deposit(accountNum, amount));
 	}
 	
+	@PutMapping("foreign/deposit/{accountNum}/{amount}/{currency}")
+	public ResponseEntity<Account> depositIntoAccountUsingForeignCurrency(@PathVariable("accountNum") Integer accountNum,
+			  @PathVariable("amount") Float amount,
+			  @PathVariable("currency") String currency) throws Throwable {
+		return ResponseEntity.ok(accountsService.deposit(accountNum, amount, currency));
+	}
+	
+	@PutMapping("foreign/withdraw/{accountNum}/{amount}/{currency}")
+	public ResponseEntity<Account> withdrawFromAccountUsingForeignCurrency(@PathVariable("accountNum") Integer accountNum,
+			  @PathVariable("amount") Float amount,
+			  @PathVariable("currency") String currency) throws Throwable {
+		return ResponseEntity.ok(accountsService.withdraw(accountNum, amount, currency));
+	}
+	
 	@PutMapping("/withdraw/{accountNum}/{amount}")
 	public ResponseEntity<Account> withdrawFromAccount(@PathVariable("accountNum") Integer accountNum,
 			  @PathVariable("amount") Float amount) throws Throwable {
@@ -68,4 +81,7 @@ public class AccountsController {
 		
 		return ResponseEntity.ok(accounts);
 	}
+	
+	
+	
 }
