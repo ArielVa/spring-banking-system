@@ -1,17 +1,15 @@
 package com.example.banking.controllers;
 
-import java.util.Calendar;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.banking.entities.Loan;
 import com.example.banking.exceptions.LoanInvalidPropertiesException;
@@ -37,6 +35,4 @@ public class LoansController {
 										@PathVariable("amount") Float amount) throws LoanInvalidPropertiesException {
 		return ResponseEntity.ok(loansService.payLoan(loanId, amount));
 	}
-	
-
 }

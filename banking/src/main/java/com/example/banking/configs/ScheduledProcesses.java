@@ -37,8 +37,8 @@ public class ScheduledProcesses {
 		loansService.payLoansFromAccounts();
 	}
 	
-	@Scheduled(initialDelay = 2000, fixedDelay = 36000)
-//	@Scheduled(cron = "@daily")
+//	@Scheduled(initialDelay = 2000, fixedDelay = 36000)
+	@Scheduled(cron = "@daily")
 	public void emailReportSender() throws MessagingException {
 		String emailAddress = environment.getProperty("spring.mail.destination");
 		

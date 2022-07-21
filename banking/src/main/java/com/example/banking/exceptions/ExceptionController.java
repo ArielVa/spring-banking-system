@@ -12,26 +12,29 @@ public class ExceptionController {
 
 	@Async
 	@ExceptionHandler(value = CustomerInvalidPropertiesException.class)
-	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Got bad customer data")
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "[Customer] - Error in performing an action on a customer.")
 	public ResponseEntity<String> customerInvalidProperties(Exception e) {
 		System.out.println("[CustomerController] - Error in performing an action on a customer.");
-		return ResponseEntity.badRequest().body("[Customer] - Error in performing an action on a customer.");
+		return ResponseEntity.badRequest().build();
 	}
 	
 	@Async
 	@ExceptionHandler(value = AccountInvalidPropertiesException.class)
-	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Got bad account data")
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "[AccountsController] - Error in performing an action on an account.")
 	public ResponseEntity<String> accountInvalidProperties(Exception e) {
 		System.out.println("[AccountsController] - Error in performing an action on an account.");
-		return ResponseEntity.badRequest().body("[Account] - Error in performing an action on an account.");
+		return ResponseEntity.badRequest().build();
 	}
 	
 	@Async
 	@ExceptionHandler(value = LoanInvalidPropertiesException.class)
-	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Got bad account data")
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "[LoansController] - Error in performing an action on a loan.")
 	public ResponseEntity<String> loanInvalidProperties(Exception e) {
 		System.out.println("[LoansController] - Error in performing an action on a loan.");
-		return ResponseEntity.badRequest().body("[Loan] - Error in performing an action on a loan.");
+		return ResponseEntity.badRequest().build();
 	}
 	
 }
+
+
+
