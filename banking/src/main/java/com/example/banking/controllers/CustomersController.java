@@ -32,11 +32,6 @@ public class CustomersController {
 	
 	@GetMapping("")
 	public ResponseEntity<List<Customer>> getAllCustomers() {
-		return ResponseEntity.ok(customersService.getAllCustomers());
-	}
-	
-	@GetMapping("get-with-active")
-	public ResponseEntity<List<Customer>> getAllCustomersWithActiveAccounts() {
 		return ResponseEntity.ok(customersService.getAllCustomersWithActiveAccounts());
 	}
 	

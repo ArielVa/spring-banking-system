@@ -13,6 +13,7 @@ import com.example.banking.repositories.AccountsRepository;
 import com.example.banking.repositories.CustomersRepository;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
@@ -93,7 +94,9 @@ public class AccountsService {
 			throwable = AccountInvalidPropertiesException.class)
 	@Transactional
 	public Account setAccountSuspencionStatus(Integer accountNum, Boolean isSuspended) throws Throwable {
-		Account acc = accountsRepository.getAnActiveAccountByNum(accountNum);
+		Optional<Account> oAcc = accountsRepository.findById(accountNum);
+		if(oAcc.isEmpty()) throw new AccountInvalidPropertiesException();
+		Account acc = oAcc.get();
 		acc.setSuspended(isSuspended);
 		return acc;
 	}

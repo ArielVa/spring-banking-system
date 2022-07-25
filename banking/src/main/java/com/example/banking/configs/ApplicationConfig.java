@@ -17,6 +17,7 @@ import com.example.banking.entities.account.AccountRiskLevel;
 
 @Configuration
 @PropertySources({
+	@PropertySource("classpath:application.properties"),
 	@PropertySource("classpath:properties/account.properties"),
 	@PropertySource("classpath:properties/customer.properties"),
 	@PropertySource("classpath:properties/email.properties"),
