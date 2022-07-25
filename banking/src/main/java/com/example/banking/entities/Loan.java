@@ -25,7 +25,7 @@ public class Loan  {
 	private float amountGiven;
 	private float amountRemained;
 	private float monthlyPayment;
-	private boolean wasPayed = false;
+	private boolean wasPaid = false;
 	private float interestRate;
 	
 	@DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -43,14 +43,14 @@ public class Loan  {
 		super();
 	}
 
-	public Loan(int loanId, float amountGiven, float amountRemained, float monthlyPayment, boolean wasPayed,
+	public Loan(int loanId, float amountGiven, float amountRemained, float monthlyPayment, boolean wasPaid,
 			float interestRate, Date takenDate, Date dueDate, Account account) {
 		super();
 		this.loanId = loanId;
 		this.amountGiven = amountGiven;
 		this.amountRemained = amountRemained;
 		this.monthlyPayment = monthlyPayment;
-		this.wasPayed = wasPayed;
+		this.wasPaid = wasPaid;
 		this.interestRate = interestRate;
 		this.takenDate = takenDate;
 		this.dueDate = dueDate;
@@ -101,12 +101,12 @@ public class Loan  {
 		this.monthlyPayment = monthlyPayment;
 	}
 
-	public boolean isWasPayed() {
-		return wasPayed;
+	public boolean isWasPaid() {
+		return wasPaid;
 	}
 
-	public void setWasPayed(boolean wasPayed) {
-		this.wasPayed = wasPayed;
+	public void setWasPaid(boolean wasPaid) {
+		this.wasPaid = wasPaid;
 	}
 
 	public float getInterestRate() {
@@ -143,14 +143,14 @@ public class Loan  {
 
 	public Loan clone() {
  
-		return new Loan(loanId, amountGiven, amountRemained, monthlyPayment, wasPayed,
+		return new Loan(loanId, amountGiven, amountRemained, monthlyPayment, wasPaid,
 			interestRate, takenDate, dueDate, account);
 	}
 	
 	@Override
 	public String toString() {
 		return "Loan [loanId=" + loanId + ", amountGiven=" + amountGiven + ", amountRemained=" + amountRemained
-				+ ", monthlyPayment=" + monthlyPayment + ", wasPayed=" + wasPayed + ", interestRate=" + interestRate
+				+ ", monthlyPayment=" + monthlyPayment + ", wasPaid=" + wasPaid + ", interestRate=" + interestRate
 				+ ", takenDate=" + takenDate + ", dueDate=" + dueDate + "]";
 	}	
 	

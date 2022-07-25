@@ -31,7 +31,7 @@ public class ScheduledProcesses {
 	private String baseCurrency;
 	
 //	@Scheduled(initialDelay = 18000, fixedDelay = 18000)
-	@Scheduled(cron = "@daily")
+	@Scheduled(cron = "@daily")	
 	public void payAllLoansFromAccounts()
 	{
 		loansService.payLoansFromAccounts();
@@ -45,7 +45,6 @@ public class ScheduledProcesses {
 		List<String> messages = new ArrayList<String>();
 		accountsService.findAllNonSuspendedAccountsBeyondRiskLevel()
 		.forEach(acc -> {
-			System.out.println(acc);
 			messages.add(acc.getCustomer().getName() + " has an account number of " + acc.getAccountNum() + " beyond its risk level.\n");
 		});
 		
@@ -56,6 +55,7 @@ public class ScheduledProcesses {
 			body+=msg;
 		}
 		
+		System.out.println("Sent accounts status email");
 		emailService.sendEmail(emailAddress, new String[] {emailAddress}, "Customer Reports", body);
 	}
 	

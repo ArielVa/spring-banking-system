@@ -50,24 +50,24 @@ public class AccountsController {
 		return ResponseEntity.ok(accountsService.deposit(accountNum, amount));
 	}
 	
-	@PutMapping("foreign/deposit/{accountNum}/{amount}/{currency}")
+	@PutMapping("/deposit/{accountNum}/{amount}/{currency}")
 	public ResponseEntity<Account> depositIntoAccountUsingForeignCurrency(@PathVariable("accountNum") Integer accountNum,
 			  @PathVariable("amount") Float amount,
 			  @PathVariable("currency") String currency) throws Throwable {
 		return ResponseEntity.ok(accountsService.deposit(accountNum, amount, currency));
 	}
-	
-	@PutMapping("foreign/withdraw/{accountNum}/{amount}/{currency}")
-	public ResponseEntity<Account> withdrawFromAccountUsingForeignCurrency(@PathVariable("accountNum") Integer accountNum,
-			  @PathVariable("amount") Float amount,
-			  @PathVariable("currency") String currency) throws Throwable {
-		return ResponseEntity.ok(accountsService.withdraw(accountNum, amount, currency));
-	}
-	
+		
 	@PutMapping("/withdraw/{accountNum}/{amount}")
 	public ResponseEntity<Account> withdrawFromAccount(@PathVariable("accountNum") Integer accountNum,
 			  @PathVariable("amount") Float amount) throws Throwable {
 		return ResponseEntity.ok(accountsService.withdraw(accountNum, amount));
+	}
+	
+	@PutMapping("/withdraw/{accountNum}/{amount}/{currency}")
+	public ResponseEntity<Account> withdrawFromAccountUsingForeignCurrency(@PathVariable("accountNum") Integer accountNum,
+			  @PathVariable("amount") Float amount,
+			  @PathVariable("currency") String currency) throws Throwable {
+		return ResponseEntity.ok(accountsService.withdraw(accountNum, amount, currency));
 	}
 	
 	@PutMapping("/transfer/{accoutNumFrom}/{accountNumTo}/{amount}")
@@ -77,6 +77,19 @@ public class AccountsController {
 		List<Account> accounts = new ArrayList<Account>() {{
 			add(accountsService.withdraw(accoutNumFrom, amount));
 			add(accountsService.deposit(accountNumTo, amount));
+		}};
+		
+		return ResponseEntity.ok(accounts);
+	}
+	
+	@PutMapping("/transfer/{accoutNumFrom}/{accountNumTo}/{amount}/{currency}")
+	public ResponseEntity<List<Account>> transferBetweenAccountsUsingForeignCurrency(@PathVariable("accoutNumFrom") Integer accoutNumFrom,
+																@PathVariable("accountNumTo") Integer accountNumTo,
+																@PathVariable("amount") Float amount,
+																@PathVariable("currency") String currency) throws Throwable {		
+		List<Account> accounts = new ArrayList<Account>() {{
+			add(accountsService.withdraw(accoutNumFrom, amount, currency));
+			add(accountsService.deposit(accountNumTo, amount, currency));
 		}};
 		
 		return ResponseEntity.ok(accounts);
